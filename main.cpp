@@ -1,18 +1,16 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cstdlib>
-#include <ctime>
-#include <iomanip>
 
 using namespace std;
 
 
 struct Property{
 
+    int ID;
     string type;
     double sqrfoot;
-    string pool;
+    bool pool;
     int stories;
     int bathrooms;
     string view;
@@ -20,202 +18,224 @@ struct Property{
 
 
 };
-
-void setHouseType(Property houses[]);
-void setSqrFoot(Property houses[]);
-void setPool(Property houses[]);
-void setStories(Property houses[]);
-void setBathrooms(Property houses[]);
-void setView(Property houses[]);
+///function to populate array
+int readInArray(Property houses[]);
+///search functions
+void houseTypeSearch(Property houses[], int userSelectionType, int numOfEntries);
+void houseBathroomSearch(Property houses[], int userSelectionBathrooms, int numOfEntries);
+void housePoolSearch(Property houses[], int userSelectionPool, int numOfEntries);
+void houseStorySearch(Property houses[], int userSelectionNumStories, int numOfEntries);
 
 int main()
 {
 
-    srand(time(0));
-    ///declaring our array of 500 houses
+    int numOfEntries;
+
+    ///array to hold houses
     Property houses[500];
 
-    ///calling our functions
-    setHouseType(houses);
-    setSqrFoot(houses);
-    setPool(houses);
-    setStories(houses);
-    setBathrooms(houses);
-    setView(houses);
+    ///call function to read input into array and return number of houses
+    numOfEntries = readInArray(houses);
+
+    ///variables to hold user inputs
+    int userSelection;
+    int userSelectionType;
+    int userSelectionBathrooms;
+    int userSelectionPool;
+    int userSelectionNumStories;
 
 
-    ///declaring output stream variable and opening output file
-    ofstream outFile;
-    outFile.open("listings.txt");
+    cout << "Select Search Parameter: type(1), baths(2), pool(3), stories(4), exit(0)";
+    cin  >> userSelection;
+    cout << endl;
 
-    ///output array to file
-    for(int i = 0; i < 500; i++)
+    if(userSelection == 1)
     {
-        outFile << setw(3) << setfill('0') << i + 1 << "   " << houses[i].type << "   " << houses[i].sqrfoot << "   "
-                << houses[i].pool << "   " << houses[i].stories << "   "
-                << houses[i].bathrooms << "   " << houses[i].view << "   " << endl;
+        cout << "Select house type: condo(1), apartment(2), detached(3): ";
+        cin  >> userSelectionType;
+        cout << endl;
+
+        houseTypeSearch(houses, userSelectionType, numOfEntries);
     }
+    else if(userSelection == 2)
+    {
+        cout << "Enter number criterium: ";
+        cin  >> userSelectionBathrooms;
+        cout << endl;
+
+        houseBathroomSearch(houses, userSelectionBathrooms, numOfEntries);
 
 
+    }
+    else if(userSelection == 3)
+    {
+        cout << "Enter Search Criterium: Houses with pool(1), without pool(2)";
+        cin  >> userSelectionPool;
+        cout << endl;
 
+        housePoolSearch(houses, userSelectionPool, numOfEntries);
+
+
+    }
+    else if (userSelection == 4)
+    {
+        cout << "Enter Number Criterium: ";
+        cin  >> userSelectionNumStories;
+        cout << endl;
+
+        houseStorySearch(houses, userSelectionNumStories, numOfEntries);
+
+
+    }
 
     return 0;
 }
 
-void setHouseType(Property houses[])
+
+int readInArray(Property houses[])
 {
+    int numOfEntries = 0;
 
-    int randNum;
 
 
-    for(int i = 0; i < 500; i++)
+    ifstream inFile;
+    inFile.open("listings.txt");
+
+    inFile >> numOfEntries;
+
+    for(int i = 0; i < numOfEntries; i++)
     {
-        ///generating a random number between 1-3
-        ///probability factor
-        randNum = (rand() % 3) + 1;
-
-
-        ///house types have the same probability
-        if(randNum == 1)
-            houses[i].type = "Condo";
-        else if(randNum == 2)
-            houses[i].type = "Apartment";
-        else if(randNum == 3)
-            houses[i].type = "Detached";
-
+        inFile >> houses[i].ID >> houses[i].type >> houses[i].sqrfoot >> houses[i].stories >> houses[i].bathrooms
+               >> houses[i].view >> houses[i].pool;
     }
+
+    return numOfEntries;
 
 }
 
-void setSqrFoot(Property houses[])
+void houseTypeSearch(Property houses[], int userSelectionType, int numOfEntries)
 {
 
-    double randNum = 0;
+    ///variables used to hold count
+    int condoCounter = 0;
+    int apartmentCounter = 0;
+    int detachedCounter = 0;
 
-    for(int i = 0; i < 500; i++)
+    if(userSelectionType == 1)
     {
-        if(houses[i].type == "Condo")
+        for(int i = 0; i < numOfEntries; i++)
         {
-            ///generating a random number between 1000-1300
-            randNum = rand()%(1300 - 1000 + 1) + 1000;
-            houses[i].sqrfoot = randNum;
+            if(houses[i].type == "condo")
+                    condoCounter++;
         }
-        else if(houses[i].type == "Apartment")
+
+        cout << condoCounter;
+    }
+
+    else if(userSelectionType == 2)
+    {
+        for(int i = 0; i < numOfEntries; i++)
         {
-            ///generating a random number between 1100-800
-            randNum = rand()%(1100 - 800 + 1) + 800;
-            houses[i].sqrfoot = randNum;
+            if(houses[i].type == "apartment")
+                    apartmentCounter++;
         }
-        else if(houses[i].type == "Detached")
+
+        cout << apartmentCounter;
+    }
+
+    else if(userSelectionType == 3)
+    {
+        for(int i = 0; i < numOfEntries; i++)
         {
-            ///generating a random number between 2400-1400
-            randNum = rand()%(2400 - 1400 + 1) + 1400;
-            houses[i].sqrfoot = randNum;
+            if(houses[i].type == "detached")
+                    detachedCounter++;
         }
+        cout << detachedCounter;
     }
 }
 
-void setPool(Property houses[])
+void houseBathroomSearch(Property houses[], int userSelectionBathrooms, int numOfEntries)
 {
+    ///variables used to hold count
+    int bathroomCounter = 0;
 
-    int randNum;
-
-    for(int i = 0; i < 500; i++)
+    for(int i = 0; i < numOfEntries; i++)
     {
-        if(houses[i].type == "Condo" || houses[i].type == "Apartment")
-        {
-            houses[i].pool = "No";
-        }
-        else if(houses[i].type == "Detached")
-        {
-            ///probability factor
-            randNum = rand()%(2 - 1 + 1) + 1;
+        if(houses[i].bathrooms == userSelectionBathrooms)
+                bathroomCounter++;
+    }
 
-            if(randNum == 1)
+        cout << bathroomCounter;
+}
+
+void housePoolSearch(Property houses[], int userSelectionPool, int numOfEntries)
+{
+    ///variables used to hold count
+    int poolCounter = 0;
+
+    if(userSelectionPool == 1)
+        {
+            for(int i = 0; i < numOfEntries; i++)
             {
-                houses[i].pool = "Yes";
+                if(houses[i].pool == 1)
+                    poolCounter++;
             }
-            else if(randNum == 2)
+
+            cout << poolCounter;
+        }
+
+        else if(userSelectionPool == 2)
+        {
+
+            for(int i = 0; i < numOfEntries; i++)
             {
-                houses[i].pool = "No";
+                if(houses[i].pool == 0)
+                    poolCounter++;
             }
+
+            cout << poolCounter - 1;
+
         }
-    }
 }
 
-void setStories(Property houses[])
+void houseStorySearch(Property houses[], int userSelectionNumStories, int numOfEntries)
 {
 
-    int randNum;
+    ///variables used to hold count
+    int oneStoryHouses = 0;
+    int twoStoryHouses = 0;
+    int threeStoryHouses = 0;
 
-    for(int i = 0; i < 500; i++)
+    if(userSelectionNumStories == 1)
     {
-        if(houses[i].type == "Condo" || houses[i].type == "Detached")
+        for(int i = 0; i < numOfEntries; i++)
         {
-            ///probability factor
-            randNum = rand()%(2 - 1 + 1) + 1;
-            houses[i].stories = randNum;
+            if(houses[i].stories == 1)
+                oneStoryHouses++;
         }
-        else if(houses[i].type == "Apartment")
-        {
 
-            ///generating a random number between 1-3
-            ///probability factor
-            randNum = (rand() % 3) + 1;
-            houses[i].stories = randNum;
+        cout << "Houses with one story: " << oneStoryHouses;
+    }
+
+    if(userSelectionNumStories == 2)
+    {
+        for(int i = 0; i < numOfEntries; i++)
+        {
+            if(houses[i].stories == 2)
+                twoStoryHouses++;
         }
+
+        cout << "Houses with two stories: " << twoStoryHouses;
+    }
+
+    if(userSelectionNumStories == 3)
+    {
+        for(int i = 0; i < numOfEntries; i++)
+        {
+            if(houses[i].stories == 3)
+                threeStoryHouses++;
+        }
+
+        cout << "Houses with three stories: " << threeStoryHouses;
     }
 }
-
-void setBathrooms(Property houses[])
-{
-    int randNum;
-
-    for (int i = 0; i < 500; i++)
-    {
-        if(houses[i].type == "Condo" || houses[i].type == "Apartment")
-        {
-            ///probability factor
-            randNum = rand()%(2 - 1 + 1) + 1;
-            houses[i].bathrooms = randNum;
-        }
-        else if(houses[i].type == "Detached")
-        {
-            randNum = rand()%(4 - 2 + 1) + 2;
-            houses[i].bathrooms = randNum;
-        }
-    }
-}
-
-void setView(Property houses[])
-{
-    int randNum;
-
-    for(int i = 0; i < 500; i++)
-    {
-        ///probability factor
-        randNum = rand()%(4 - 1 + 1) + 1;
-
-        if(randNum == 1)
-            houses[i].view = "Sea";
-        else if (randNum == 2)
-            houses[i].view = "Lake";
-        else if(randNum == 3)
-            houses[i].view = "Neighborhood";
-        else if(randNum == 4)
-            houses[i].view = "Forest";
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
